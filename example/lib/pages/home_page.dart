@@ -13,7 +13,6 @@ import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../universal_ui/universal_ui.dart';
 import 'read_only_page.dart';
 
 enum _SelectionType {
@@ -158,7 +157,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildWelcomeEditor(BuildContext context) {
-    Widget quillEditor = MouseRegion(
+    final Widget quillEditor = MouseRegion(
       cursor: SystemMouseCursors.text,
       child: QuillEditor(
         controller: _controller!,
@@ -194,41 +193,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-    if (kIsWeb) {
-      quillEditor = MouseRegion(
-        cursor: SystemMouseCursors.text,
-        child: QuillEditor(
-            controller: _controller!,
-            scrollController: ScrollController(),
-            scrollable: true,
-            focusNode: _focusNode,
-            autoFocus: false,
-            readOnly: false,
-            placeholder: 'Add content',
-            expands: false,
-            padding: EdgeInsets.zero,
-            onTapUp: (details, p1) {
-              return _onTripleClickSelection();
-            },
-            customStyles: DefaultStyles(
-              h1: DefaultTextBlockStyle(
-                  const TextStyle(
-                    fontSize: 32,
-                    color: Colors.black,
-                    height: 1.15,
-                    fontWeight: FontWeight.w300,
-                  ),
-                  const VerticalSpacing(16, 0),
-                  const VerticalSpacing(0, 0),
-                  null),
-              sizeSmall: const TextStyle(fontSize: 9),
-            ),
-            embedBuilders: [
-              ...defaultEmbedBuildersWeb,
-              NotesEmbedBuilder(addEditNote: _addEditNote),
-            ]),
-      );
-    }
+
     var toolbar = QuillToolbar.basic(
       controller: _controller!,
       embedButtons: FlutterQuillEmbeds.buttons(
@@ -238,11 +203,10 @@ class _HomePageState extends State<HomePage> {
         onImagePickCallback: _onImagePickCallback,
         onVideoPickCallback: _onVideoPickCallback,
         // uncomment to provide a custom "pick from" dialog.
-        // mediaPickSettingSelector: _selectMediaPickSetting,
+        mediaPickSettingSelector: _selectMediaPickSetting,
         // uncomment to provide a custom "pick from" dialog.
-        // cameraPickSettingSelector: _selectCameraPickSetting,
+        cameraPickSettingSelector: _selectCameraPickSetting,
       ),
-      showAlignmentButtons: true,
       afterButtonPressed: _focusNode.requestFocus,
     );
     if (kIsWeb) {
@@ -280,14 +244,22 @@ class _HomePageState extends State<HomePage> {
               child: quillEditor,
             ),
           ),
-          kIsWeb
-              ? Expanded(
-                  child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                  child: toolbar,
-                ))
-              : Container(child: toolbar)
+          GestureDetector(
+            onTap: () {
+              //action
+              FlutterQuillEmbeds.handleCameraIcon(
+                  controller: _controller!,
+                  context: context,
+                  onVideoPickCallback: _onVideoPickCallback);
+            },
+            child: Container(
+              color: Colors.red,
+              height: 50,
+              width: MediaQuery.of(context).size.width,
+              child: Row(),
+            ),
+          ),
+          toolbar
         ],
       ),
     );
