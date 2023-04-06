@@ -410,7 +410,7 @@ class QuillEditorState extends State<QuillEditor>
   final GlobalKey<EditorState> _editorKey = GlobalKey<EditorState>();
   late EditorTextSelectionGestureDetectorBuilder
       _selectionGestureDetectorBuilder;
-
+  final myFocusNode = FocusNode();
   @override
   void initState() {
     super.initState();
@@ -711,7 +711,18 @@ class _QuillEditorSelectionGestureDetectorBuilder
         }
       }
     } finally {
-      _state._requestKeyboard();
+      if (_state.widget.controller.document
+              .querySegmentLeafNode(
+                  _state.widget.controller.selection.base.offset)
+              .leaf
+              .runtimeType !=
+          Embed) {
+        _state._requestKeyboard();
+      } else {
+        if (_state.myFocusNode.hasFocus) {
+          _state.myFocusNode.unfocus();
+        }
+      }
     }
   }
 

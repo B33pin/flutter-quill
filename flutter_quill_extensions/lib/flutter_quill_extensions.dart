@@ -2,12 +2,14 @@ library flutter_quill_extensions;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'embeds/builders.dart';
 import 'embeds/embed_types.dart';
 import 'embeds/toolbar/camera_button.dart';
 import 'embeds/toolbar/formula_button.dart';
 import 'embeds/toolbar/image_button.dart';
+import 'embeds/toolbar/image_video_utils.dart';
 import 'embeds/toolbar/video_button.dart';
 
 export 'embeds/embed_types.dart';
@@ -88,5 +90,18 @@ class FlutterQuillEmbeds {
               dialogTheme: dialogTheme,
             )
     ];
+  }
+
+  static Future<void> handleCameraIcon({
+    required QuillController controller,
+    required BuildContext context,
+    required OnVideoPickCallback onVideoPickCallback,
+  }) async {
+    await ImageVideoUtils.handleVideoButtonTap(
+      context,
+      controller,
+      ImageSource.camera,
+      onVideoPickCallback,
+    );
   }
 }

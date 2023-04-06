@@ -168,6 +168,7 @@ class VideoEmbedBuilder extends EmbedBuilder {
       return YoutubeVideoApp(
           videoUrl: videoUrl, context: context, readOnly: readOnly);
     }
+
     return VideoApp(
       videoUrl: videoUrl,
       context: context,

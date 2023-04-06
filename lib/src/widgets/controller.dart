@@ -170,6 +170,34 @@ class QuillController extends ChangeNotifier {
     }
   }
 
+  bool _getIsToggled(Map<String, Attribute> attrs, Attribute atrib) {
+    if (atrib.key == Attribute.list.key) {
+      final attribute = attrs[atrib.key];
+      if (attribute == null) {
+        return false;
+      }
+      return attribute.value == atrib.value;
+    }
+    return attrs.containsKey(atrib.key);
+  }
+
+  bool toogleBold() {
+    formatSelection(
+        _getIsToggled(getSelectionStyle().attributes, Attribute.bold)
+            ? Attribute.clone(Attribute.bold, null)
+            : Attribute.bold);
+    return _getIsToggled(getSelectionStyle().attributes, Attribute.bold);
+  }
+
+  bool toogleOL() {
+    formatSelection(_getIsToggled(getSelectionStyle().attributes, Attribute.ol)
+        ? Attribute.clone(Attribute.ol, null)
+        : Attribute.ol);
+    return _getIsToggled(getSelectionStyle().attributes, Attribute.ol);
+  }
+
+ 
+
   bool get hasUndo => document.hasUndo;
 
   bool get hasRedo => document.hasRedo;

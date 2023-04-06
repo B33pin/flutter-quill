@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:pasteboard/pasteboard.dart';
 
+import '../../extensions.dart';
 import '../models/documents/attribute.dart';
 import '../models/documents/document.dart';
 import '../models/documents/nodes/block.dart';
@@ -27,7 +28,6 @@ import '../models/structs/vertical_spacing.dart';
 import '../utils/cast.dart';
 import '../utils/delta.dart';
 import '../utils/embeds.dart';
-import '../utils/platform.dart';
 import 'controller.dart';
 import 'cursor.dart';
 import 'default_styles.dart';
@@ -377,7 +377,11 @@ class RawEditorState extends EditorState
     /// and mobile browsers.
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
+        widget.focusNode.unfocus();
+        break;
       case TargetPlatform.iOS:
+        widget.focusNode.unfocus();
+        break;
       case TargetPlatform.fuchsia:
         // On mobile platforms, we don't unfocus on touch events unless they're
         // in the web browser, but we do unfocus for all other kinds of events.
@@ -703,9 +707,19 @@ class RawEditorState extends EditorState
     _selectionOverlay?.handlesVisible = _shouldShowSelectionHandles();
 
     if (!_keyboardVisible) {
+      if (controller.document
+              .querySegmentLeafNode(selection.base.offset)
+              .leaf
+              .runtimeType !=
+          Embed) {
+        requestKeyboard();
+      } else {
+        if (_hasFocus) {
+          widget.focusNode.unfocus();
+        }
+      }
       // This will show the keyboard for all selection changes on the
       // editor, not just changes triggered by user gestures.
-      requestKeyboard();
     }
 
     if (cause == SelectionChangedCause.drag) {
@@ -1037,7 +1051,17 @@ class RawEditorState extends EditorState
     if (ignoreFocus || _keyboardVisible) {
       _onChangeTextEditingValue(ignoreFocus);
     } else {
-      requestKeyboard();
+      if (controller.document
+              .querySegmentLeafNode(controller.selection.base.offset)
+              .leaf
+              .runtimeType !=
+          Embed) {
+        requestKeyboard();
+      } else {
+        if (_hasFocus) {
+          widget.focusNode.unfocus();
+        }
+      }
       if (mounted) {
         setState(() {
           // Use controller.value in build()
